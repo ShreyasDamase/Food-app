@@ -1,15 +1,21 @@
 package com.example.foodapp.Activity.Dashboard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
- import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,34 +38,34 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 
 @Composable
-fun Banner (banners: SnapshotStateList<BannerModel>,showBannerLoading  : Boolean){
+fun Banners (banners: SnapshotStateList<BannerModel>,showBannerLoading  : Boolean){
     if (showBannerLoading){
         Box(modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .height(200.dp), contentAlignment = Alignment.Center){
             CircularProgressIndicator()
 
         }
     }else{
-Banners(banners)
+Banner(banners, showBannerLoading)
     }
 }
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun Banners(banners: SnapshotStateList<BannerModel>){
+fun Banner(banners: SnapshotStateList<BannerModel>, showBannerLoading: Boolean){
 
     AutoSlidingCarosel(banners=banners)
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun AutoSlidingCarosel(modifier: Modifier= Modifier, pagerState: PagerState = remember {PagerState()}, banners: List<BannerModel>){
+fun  AutoSlidingCarosel(modifier: Modifier= Modifier, pagerState: PagerState = remember {PagerState()}, banners: List<BannerModel>){
 val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
     Column(modifier= Modifier.fillMaxSize()){
         HorizontalPager(count =banners.size , state=pagerState) {
             page->
             AsyncImage(
-                model= ImageRequest.Builder(LocalContext.current).data(banners[page].image),
+                model= ImageRequest.Builder(LocalContext.current).data(banners[page].image).build(),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
@@ -88,8 +94,27 @@ val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
 
 @Composable
 fun DotIndicator(modifier: Modifier= Modifier ,totalDot:Int,selectedIndex:Int,selectedColor: Color=
-    colorResource(R.color.orange),
-                 inSelectedColor:Color=colorResource(R.color.grey),dotSize: Dp
-){
-    LazyRow(){}
+    colorResource(R.color.orange), unSelectedColor: Color=colorResource(R.color.grey),dotSize: Dp
+ ){
+    LazyRow(modifier= Modifier
+        .fillMaxSize()
+        .wrapContentWidth()
+        .wrapContentHeight()){
+        items(totalDot){
+            index ->
+                IndicatorDot( color=  if (index == selectedIndex )  selectedColor  else unSelectedColor ,
+                    size = dotSize , modifier = Modifier)
+            if (index==totalDot-1) Spacer(modifier= Modifier.padding(horizontal = 2.dp ))
+
+        }
+    }
+}
+@Composable
+fun IndicatorDot(modifier: Modifier= Modifier,  size:Dp ,color: Color){
+    Box(modifier= Modifier
+        .size(size)
+        .clip(CircleShape)
+        .background(color)){
+
+    }
 }
